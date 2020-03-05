@@ -20,6 +20,10 @@ import java.util.concurrent.ThreadLocalRandom;
 
 
 
+/**
+ * @author cut05430
+ *
+ */
 public class Game extends Canvas implements Runnable{
 
 
@@ -46,7 +50,8 @@ public class Game extends Canvas implements Runnable{
     private String currentState;
     private ArrayList<ArrayList<Square>> board;
     private Random rand;
-    private ArrayList<Vector2d> squareDefiner;
+    private ArrayList<ArrayList<Integer>> squareDefiner;
+    private boolean firstTurn;
 
     public Game() {
 
@@ -70,6 +75,9 @@ public class Game extends Canvas implements Runnable{
         	board.add(temp);
         }
         assignBombs();
+        assignNums();
+        firstTurn=true;
+        printBombNums();
 
 
     }
@@ -253,10 +261,12 @@ public class Game extends Canvas implements Runnable{
 	}
 	
 	public void assignBombs(){
+
+
 		for(int i = 0; i<10; i++){
 			int random = rand.nextInt(9);
 			int random2 = rand.nextInt(9);
-			if(!board.get(random).get(random2).isBomb()){
+			if(!board.get(random).get(random2).isBomb() && !(random==9 && random2==9)){
 				board.get(random).get(random2).makeBomb();
 			}else{
 				i--;
@@ -265,8 +275,98 @@ public class Game extends Canvas implements Runnable{
 		}
 	}
 	
-	
-	
+	public void assignNums(){
 
+		for(int i = 0; i<board.size(); i++){
+			for(int j = 0; j<board.get(0).size(); j++){
+				if(!board.get(i).get(j).isBomb()){
+					// checks for bombs
+					int bombCount=0;
+					try{
+						if(board.get(i-1).get(j).isBomb()){
+							bombCount++;
+						}
+					}catch(Exception e){
+					}
+					try{
+						if(board.get(i-1).get(j+1).isBomb()){
+							bombCount++;
+						}
+					}catch(Exception e){
+					}
+					try{
+						if(board.get(i).get(j+1).isBomb()){
+							bombCount++;
+						}
+					}catch(Exception e){
+					}
+					try{
+						if(board.get(i+1).get(j+1).isBomb()){
+							bombCount++;
+						}
+					}catch(Exception e){
+					}
+					try{
+						if(board.get(i+1).get(j).isBomb()){
+							bombCount++;
+						}
+					}catch(Exception e){
+					}
+					try{
+						if(board.get(i+1).get(j-1).isBomb()){
+							bombCount++;
+						}
+					}catch(Exception e){
+					}
+					try{
+						if(board.get(i).get(j-1).isBomb()){
+							bombCount++;
+						}
+					}catch(Exception e){
+					}
+					try{
+						if(board.get(i-1).get(j-1).isBomb()){
+							bombCount++;
+						}
+					}catch(Exception e){
+					}
+					
+					board.get(i).get(j).setBombNum(bombCount);
+					
+				}
+			}
+		}
+	}
+	
+	public void printBombNums(){
+
+		for(int i = 0; i<board.size(); i++){
+			for(int j = 0; j<board.get(0).size(); j++){
+				if(board.get(i).get(j).isBomb())
+					System.out.print("B");
+				else
+					System.out.print(board.get(i).get(j).getBombNum());
+			}
+			System.out.println();
+		}
+	}
+
+	public ArrayList<ArrayList<Square>> getBoard() {
+		return board;
+	}
+
+	public void setBoard(ArrayList<ArrayList<Square>> board) {
+		this.board = board;
+	}
+	public boolean isFirstTurn() {
+		return firstTurn;
+	}
+
+	public void setFirstTurn(boolean firstTurn) {
+		this.firstTurn = firstTurn;
+	}
+	
+	
+	
 
 }

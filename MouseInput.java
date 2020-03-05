@@ -13,6 +13,7 @@ public class MouseInput implements MouseListener, MouseMotionListener{
 
 
 	private Game game;
+	private int gameRow=-1, gameColumn=-1;
 
 
 	public MouseInput(Game game){
@@ -31,6 +32,20 @@ public class MouseInput implements MouseListener, MouseMotionListener{
 			}
 		
 		
+		}else if(game.getCurrentState().equals("game")){
+			gameRow=e.getY() / 99;
+			gameColumn=e.getX() / 99;
+			game.getBoard().get(gameColumn).get(gameRow).uncover();
+			
+			if(game.isFirstTurn()){
+				game.setFirstTurn(false);
+				if(game.getBoard().get(gameColumn).get(gameRow).isBomb()){
+					game.getBoard().get(gameColumn).get(gameRow).destroyBomb();
+					game.getBoard().get(9).get(9).makeBomb();
+					game.assignNums();
+				}
+			}
+			
 		}
 
 	}
