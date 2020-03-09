@@ -61,6 +61,12 @@ public class Square {
 	public void uncover(){
 		uncovered=true;
 	}
+	public boolean isUncovered(){
+		return uncovered;
+	}
+	public void cover(){
+		uncovered=false;
+	}
 	
 
 }

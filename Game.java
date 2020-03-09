@@ -330,7 +330,8 @@ public class Game extends Canvas implements Runnable{
 						}
 					}catch(Exception e){
 					}
-					
+					if(board.get(i).get(j).isBomb())
+						bombCount=-1;
 					board.get(i).get(j).setBombNum(bombCount);
 					
 				}
@@ -364,6 +365,26 @@ public class Game extends Canvas implements Runnable{
 
 	public void setFirstTurn(boolean firstTurn) {
 		this.firstTurn = firstTurn;
+	}
+	
+	public void firstTurnException(int column, int row, Square selected){
+		if(selected.getBombNum()==0 && !selected.isBomb()){
+			FLOOD(column, row);
+		}
+	}
+	
+	public void FLOOD(int column, int row){
+		if(board.get(column).get(row).isUncovered()){
+			return;
+		}else if(board.get(column).get(row).getBombNum()!=0){
+			return;
+		}else{
+			board.get(column).get(row).uncover();
+		}
+		FLOOD(column+1, row);
+		FLOOD(column-1, row);
+		FLOOD(column, row+1);
+		FLOOD(column, row-1);
 	}
 	
 	
