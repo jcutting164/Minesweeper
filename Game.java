@@ -330,11 +330,12 @@ public class Game extends Canvas implements Runnable{
 						}
 					}catch(Exception e){
 					}
-					if(board.get(i).get(j).isBomb())
-						bombCount=-1;
+					
 					board.get(i).get(j).setBombNum(bombCount);
 					
 				}
+				if(board.get(i).get(j).isBomb())
+					board.get(i).get(j).setBombNum(-1);
 			}
 		}
 	}
@@ -368,23 +369,74 @@ public class Game extends Canvas implements Runnable{
 	}
 	
 	public void firstTurnException(int column, int row, Square selected){
-		if(selected.getBombNum()==0 && !selected.isBomb()){
-			FLOOD(column, row);
+		if(selected.getBombNum()==0){
+			FLOOD(column, row, false);
 		}
 	}
 	
-	public void FLOOD(int column, int row){
+	public void FLOOD(int column, int row, boolean exception){
+		boolean leftCap = false;
+		boolean rightCap = false;
+		boolean upCap = false;
+		boolean downCap = false;
+		System.out.println("call");
 		if(board.get(column).get(row).isUncovered()){
+			System.out.println("jaja");
 			return;
-		}else if(board.get(column).get(row).getBombNum()!=0){
+		}else if(board.get(column).get(row).getBombNum()!=0 && exception){
+			
+			board.get(column).get(row).uncover();
+		
+		}else if(board.get(column).get(row).getBombNum()!=0 && !exception){
+			System.out.println("jaja part 23");
 			return;
+		
+
 		}else{
 			board.get(column).get(row).uncover();
+
 		}
-		FLOOD(column+1, row);
-		FLOOD(column-1, row);
-		FLOOD(column, row+1);
-		FLOOD(column, row-1);
+	/*	leftCap=false;
+		rightCap=false;
+		upCap=false;
+		downCap=false;*/
+		System.out.println("here");
+		if((column+1 > -1 && column+1 < 9 && row >-1 && row < 9)){
+			if(board.get(column+1).get(row).getBombNum()!=0 && !rightCap){
+				rightCap=true;
+				FLOOD(column+1, row, true);
+			}else if(board.get(column+1).get(row).getBombNum()==0){
+				FLOOD(column+1, row, false);
+			}
+
+		}
+		if((column-1 > -1 && column-1 < 9 && row >-1 && row < 9)){
+			if(board.get(column-1).get(row).getBombNum()!=0 && !leftCap){
+				leftCap=true;
+				FLOOD(column-1, row, true);
+			}else if(board.get(column-1).get(row).getBombNum()==0){
+				FLOOD(column-1, row,false);
+			}
+
+		}
+		if((column > -1 && column < 9 && row+1 >-1 && row+1 < 9)){
+			if(board.get(column).get(row+1).getBombNum()!=0 && !downCap){
+				downCap=true;
+				FLOOD(column, row+1, true);
+			}else if(board.get(column).get(row+1).getBombNum()==0){
+				FLOOD(column, row+1, false);
+			}
+
+		}
+		if((column > -1 && column < 9 && row-1 >-1 && row-1 < 9)){
+			if(board.get(column).get(row-1).getBombNum()!=0 && !upCap){
+				upCap=true;
+				FLOOD(column, row-1, true);
+			}else if(board.get(column).get(row-1).getBombNum()==0){
+				FLOOD(column, row-1, false);
+			}
+
+		}
 	}
 	
 	

@@ -45,12 +45,14 @@ public class MouseInput implements MouseListener, MouseMotionListener{
 					game.getBoard().get(8).get(8).makeBomb();
 					game.assignNums();
 					
-					if(game.getBoard().get(gameColumn).get(gameRow).getBombNum()!=0)
-						game.getBoard().get(gameColumn).get(gameRow).cover();
-					game.firstTurnException(gameColumn, gameRow, game.getBoard().get(gameColumn).get(gameRow));
+					
 					// first turn exception
 				}
+				if(game.getBoard().get(gameColumn).get(gameRow).getBombNum()==0)
+					game.getBoard().get(gameColumn).get(gameRow).cover();
+				game.firstTurnException(gameColumn, gameRow, game.getBoard().get(gameColumn).get(gameRow));
 			}
+			
 			
 		}
 

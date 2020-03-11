@@ -53,7 +53,10 @@ public class Square {
 			g.setColor(Color.gray);
 			g.fillRect((int)x, (int)y, 99, 99);
 		}
+		g.setColor(Color.red);
+
 		
+		g.drawString(""+num, (int)x+50, (int)y+50);
 
 	
 		
