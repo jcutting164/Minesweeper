@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.Scanner;
 
 
 
@@ -52,9 +53,12 @@ public class Game extends Canvas implements Runnable{
     private Random rand;
     private ArrayList<ArrayList<Integer>> squareDefiner;
     private boolean firstTurn;
+    Scanner scan;
+    private int uncoverCount;
 
     public Game() {
-
+    	uncoverCount=0;
+		scan=new Scanner(System.in);
     	keyInput = new KeyInput(this);
     	mouseInput = new MouseInput(this);
 
@@ -70,7 +74,7 @@ public class Game extends Canvas implements Runnable{
         for(int i = 0; i<9; i++){
         	ArrayList<Square> temp = new ArrayList<Square>(); 
         	for(int j = 0; j<9; j++){
-        		temp.add(new Square());
+        		temp.add(new Square(false,0,this));
         	}
         	board.add(temp);
         }
@@ -131,7 +135,8 @@ public class Game extends Canvas implements Runnable{
 
     private void tick() {
         try{
-            
+            if(uncoverCount>=83)
+            	currentState="end";
 
         }catch(Exception e){
             e.printStackTrace();
@@ -201,7 +206,17 @@ public class Game extends Canvas implements Runnable{
     		// end of board rendering
     		
     		
-    	}
+    	}else if(currentState.equals("end")){
+			g.setColor(Color.black);
+			g.fillRect(0, 0, (int)WIDTH, (int)HEIGHT);
+			g.setColor(Color.white);
+			g.setFont(new Font("Serif", Font.BOLD, 45));
+
+			if(uncoverCount>=83)
+				g.drawString("You won!!!",370,400);
+			else
+				g.drawString("You lost!!!", 370, 400);
+		}
     	
     	
         	
@@ -370,24 +385,65 @@ public class Game extends Canvas implements Runnable{
 	
 	public void firstTurnException(int column, int row, Square selected){
 		if(selected.getBombNum()==0){
-			FLOOD(column, row, false);
+			FLOOD(column, row);
 		}
+
+		ArrayList<ArrayList<Square>> temp = new ArrayList<>();
+
+
+		for(int i = 0; i<9; i++)
+			temp.add(new ArrayList<Square>());
+
+		for(int i = 0; i<board.size(); i++){
+			for(int j = 0; j<board.get(0).size(); j++){
+				if(board.get(i).get(j).isUncovered())
+					temp.get(i).add(board.get(i).get(j));
+				else
+					temp.get(i).add(new Square());
+			}
+		}
+
+		for(int i = 0; i<board.size(); i++){
+			for(int j = 0; j<board.get(0).size(); j++){
+				if(temp.get(i).get(j).isUncovered()){
+
+					if(i+1 < 9){
+						if(!board.get(i+1).get(j).isUncovered())
+							board.get(i+1).get(j).uncover();
+					}
+
+					if(i-1 > -1)
+						if(!board.get(i-1).get(j).isUncovered())
+
+							board.get(i-1).get(j).uncover();
+					if(j+1 < 9)
+						if(!board.get(i).get(j+1).isUncovered())
+
+							board.get(i).get(j+1).uncover();
+					if(j-1 > -1)
+						if(!board.get(i).get(j-1).isUncovered())
+
+							board.get(i).get(j-1).uncover();
+
+
+				}
+
+			}
+		}
+
+
+
+
 	}
 	
-	public void FLOOD(int column, int row, boolean exception){
-		boolean leftCap = false;
-		boolean rightCap = false;
-		boolean upCap = false;
-		boolean downCap = false;
+	public void FLOOD(int column, int row){
+
 		System.out.println("call");
 		if(board.get(column).get(row).isUncovered()){
 			System.out.println("jaja");
 			return;
-		}else if(board.get(column).get(row).getBombNum()!=0 && exception){
-			
-			board.get(column).get(row).uncover();
 		
-		}else if(board.get(column).get(row).getBombNum()!=0 && !exception){
+		}else if(board.get(column).get(row).getBombNum()!=0){
 			System.out.println("jaja part 23");
 			return;
 		
@@ -396,47 +452,35 @@ public class Game extends Canvas implements Runnable{
 			board.get(column).get(row).uncover();
 
 		}
-	/*	leftCap=false;
-		rightCap=false;
-		upCap=false;
-		downCap=false;*/
+
 		System.out.println("here");
 		if((column+1 > -1 && column+1 < 9 && row >-1 && row < 9)){
-			if(board.get(column+1).get(row).getBombNum()!=0 && !rightCap){
-				rightCap=true;
-				FLOOD(column+1, row, true);
-			}else if(board.get(column+1).get(row).getBombNum()==0){
-				FLOOD(column+1, row, false);
-			}
+
+			FLOOD(column+1, row);
+
 
 		}
 		if((column-1 > -1 && column-1 < 9 && row >-1 && row < 9)){
-			if(board.get(column-1).get(row).getBombNum()!=0 && !leftCap){
-				leftCap=true;
-				FLOOD(column-1, row, true);
-			}else if(board.get(column-1).get(row).getBombNum()==0){
-				FLOOD(column-1, row,false);
-			}
+			FLOOD(column-1, row);
+
 
 		}
 		if((column > -1 && column < 9 && row+1 >-1 && row+1 < 9)){
-			if(board.get(column).get(row+1).getBombNum()!=0 && !downCap){
-				downCap=true;
-				FLOOD(column, row+1, true);
-			}else if(board.get(column).get(row+1).getBombNum()==0){
-				FLOOD(column, row+1, false);
-			}
+
+			FLOOD(column, row+1);
+
 
 		}
 		if((column > -1 && column < 9 && row-1 >-1 && row-1 < 9)){
-			if(board.get(column).get(row-1).getBombNum()!=0 && !upCap){
-				upCap=true;
-				FLOOD(column, row-1, true);
-			}else if(board.get(column).get(row-1).getBombNum()==0){
-				FLOOD(column, row-1, false);
-			}
+
+			FLOOD(column, row-1 );
+
 
 		}
+	}
+
+	public void addUncover(){
+    	uncoverCount++;
 	}
 	
 	

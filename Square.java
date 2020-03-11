@@ -10,6 +10,7 @@ public class Square {
 	private boolean isBomb;
 	private int num;
 	private boolean uncovered;
+	private Game game;
 	
 	public Square(){
 		uncovered=false;
@@ -17,9 +18,10 @@ public class Square {
 		num=0;
 	}
 	
-	public Square(boolean isBomb, int num){
+	public Square(boolean isBomb, int num, Game game){
 		this.isBomb=isBomb;
 		this.num=num;
+		this.game=game;
 	}
 	
 	public boolean isBomb(){
@@ -48,21 +50,22 @@ public class Square {
 			g.setColor(Color.gray.darker().darker());
 			g.fillRect((int)x, (int)y, 99, 99);
 			g.setColor(Color.red);
-			g.drawString(""+num, (int)x+50, (int)y+50);
+			if(num!=0)
+				g.drawString(""+num, (int)x+50, (int)y+50);
 		}else{
 			g.setColor(Color.gray);
 			g.fillRect((int)x, (int)y, 99, 99);
 		}
 		g.setColor(Color.red);
 
-		
-		g.drawString(""+num, (int)x+50, (int)y+50);
+
 
 	
 		
 	}
 	public void uncover(){
 		uncovered=true;
+		game.addUncover();
 	}
 	public boolean isUncovered(){
 		return uncovered;

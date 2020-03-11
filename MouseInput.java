@@ -25,35 +25,78 @@ public class MouseInput implements MouseListener, MouseMotionListener{
 
 
 	public void mousePressed(MouseEvent e) {
-		if(game.getCurrentState().equals("Menu")){
-			
-			if(new Rectangle(365, 700, 256, 96).intersects(new Rectangle(e.getX(),e.getY(),1,1))){
-				game.setCurrentState("game");
-			}
-		
-		
-		}else if(game.getCurrentState().equals("game")){
+		if(e.isShiftDown() && game.getCurrentState().equals("game")){
+
 			gameRow=e.getY() / 99;
 			gameColumn=e.getX() / 99;
-			game.getBoard().get(gameColumn).get(gameRow).uncover();
-			
-			
-			if(game.isFirstTurn()){
-				game.setFirstTurn(false);
-				if(game.getBoard().get(gameColumn).get(gameRow).isBomb()){
-					game.getBoard().get(gameColumn).get(gameRow).destroyBomb();
-					game.getBoard().get(8).get(8).makeBomb();
-					game.assignNums();
-					
-					
-					// first turn exception
+			if(gameRow ==9)
+				gameRow=8;
+			if(gameColumn==9)
+				gameColumn=8;
+			if(!game.getBoard().get(gameColumn).get(gameRow).isUncovered()) {
+
+				if (game.getBoard().get(gameColumn).get(gameRow).isBomb()) {
+					game.getBoard().get(gameColumn).get(gameRow).uncover();
+
+				} else {
+					game.setCurrentState("end");
 				}
-				if(game.getBoard().get(gameColumn).get(gameRow).getBombNum()==0)
-					game.getBoard().get(gameColumn).get(gameRow).cover();
-				game.firstTurnException(gameColumn, gameRow, game.getBoard().get(gameColumn).get(gameRow));
+
 			}
-			
-			
+			if(game.isFirstTurn())
+				game.setFirstTurn(false);
+		}else {
+
+
+			if (game.getCurrentState().equals("Menu")) {
+
+				if (new Rectangle(365, 700, 256, 96).intersects(new Rectangle(e.getX(), e.getY(), 1, 1))) {
+					game.setCurrentState("game");
+				}
+
+
+			} else if (game.getCurrentState().equals("game")) {
+				gameRow = e.getY() / 99;
+				gameColumn = e.getX() / 99;
+				if (gameRow == 9)
+					gameRow = 8;
+				if (gameColumn == 9)
+					gameColumn = 8;
+
+
+
+				if(!game.getBoard().get(gameColumn).get(gameRow).isUncovered()) {
+
+
+					if (game.getBoard().get(gameColumn).get(gameRow).isBomb() && !game.isFirstTurn()) {
+						game.setCurrentState("end");
+					} else{
+						game.getBoard().get(gameColumn).get(gameRow).uncover();
+
+
+						if (game.isFirstTurn()) {
+							game.setFirstTurn(false);
+							if (game.getBoard().get(gameColumn).get(gameRow).isBomb()) {
+								game.getBoard().get(gameColumn).get(gameRow).destroyBomb();
+								game.getBoard().get(8).get(8).makeBomb();
+								game.assignNums();
+
+
+								// first turn exception
+							}
+							if (game.getBoard().get(gameColumn).get(gameRow).getBombNum() == 0) {
+								game.getBoard().get(gameColumn).get(gameRow).cover();
+								game.firstTurnException(gameColumn, gameRow, game.getBoard().get(gameColumn).get(gameRow));
+								game.getBoard().get(gameColumn).get(gameRow).uncover();
+
+
+							}
+						}
+					}
+
+
+				}
+			}
 		}
 
 	}
